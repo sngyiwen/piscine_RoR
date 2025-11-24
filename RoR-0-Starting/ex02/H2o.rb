@@ -2,7 +2,7 @@ def convert_to_hash(data)
     hash = {}
     data.each do |name, number|
         if hash[number].nil?
-            hash[number] = name
+            hash[number] = [name]
         else 
             hash[number] << name
         end
@@ -31,4 +31,9 @@ def h2o
 
     hash = convert_to_hash(data)
 
-    #to do sort and puts key and value
+    hash.keys.sort.each do |key|
+        puts "#{key} : #{hash[key].join(' ')}"
+    end
+end
+
+h2o
