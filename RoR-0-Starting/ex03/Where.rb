@@ -1,5 +1,8 @@
 #!/usr/bin/env -S ruby -w
 
+TEST = true
+
+
 def where
 
     states = {
@@ -14,15 +17,19 @@ def where
         "NJ" => "Trenton",
         "CO" => "Denver"
     }
-
-    if ARGV.size != 1
+    
+    if ARGV.size < 1
         exit 1
     end
 
-    if ARGV.size == 2 && ARGV[0] != "New" && ARGV[1] != "Jersey"
-        exit 1
+    long_form = ARGV.join(' ')
+    
+    abbrevation = states[long_form];
+
+    if TEST
+        run_test
+        return
     end
-    abbrevation = states[ARGV[0]];
 
     if abbrevation.nil?
         puts "Unknown state"
