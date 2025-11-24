@@ -1,7 +1,28 @@
 #!/usr/bin/env -S ruby -w
 
-TEST = true
+TEST = false
 
+def run_test
+
+    test_cases = [
+        ["Oregon", "Salem"],
+        ["Alabama", "Montgomery"],
+        ["New Jersey", "Trenton"],
+        ["Colorado", "Denver"],
+        ["Singapore", "Unknown state"],
+    ]
+
+    puts "====> RUNNING TESTS <====="
+    puts "------------------------"
+
+    test_cases.each do |input, expected|
+        output = `./Where.rb #{input}`.strip
+        status = (output == expected) ? "OK ✅" : "FAIL ❌"
+        printf "%-12s → %-22s [%s]\n", input, output, status
+    end
+    puts "------------------------"
+    puts "====> END OF TESTS <====="
+end
 
 def where
 
@@ -17,19 +38,27 @@ def where
         "NJ" => "Trenton",
         "CO" => "Denver"
     }
-    
-    if ARGV.size < 1
-        exit 1
+    if TEST && ARGV.size < 1
+        run_test
+        return
     end
 
+    if ARGV.size < 1 || ARGV.size > 2
+        return 1
+    end
+
+    if ARGV.size == 2
+        new_jersey_test = ARGV.join(' ')
+        if new_jersey_test != "New Jersey"
+            return 1
+        end
+    end
+    
     long_form = ARGV.join(' ')
     
     abbrevation = states[long_form];
 
-    if TEST
-        run_test
-        return
-    end
+
 
     if abbrevation.nil?
         puts "Unknown state"
