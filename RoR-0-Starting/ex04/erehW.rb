@@ -30,7 +30,28 @@ def erehw
         return 1
     end
 
-   
-end  
+    capital = ARGV[0]
+    abbrevation = nil
+    capitals_cities.each do |code, city|
+        if city == capital
+            abbrevation = code
+            break
+        end
+    end
+
+    if abbrevation.nil?
+        puts "Unknown capital"
+        return 
+    end
+
+    state = nil
+    states.each do |state_name, code|
+        if code == abbrevation
+            state = state_name
+            break
+        end
+    end
+    puts state
+end
 
 erehw
