@@ -1,10 +1,25 @@
 #!/usr/bin/env -S ruby -w
 
-TEST = false
+TEST = true
 
 def run_test
+    test_cases = [
+        ["Salem", "Oregon"],
+        ["Montgomery", "Alabama"],
+        ["Trenton", "New Jersey"],
+        ["Denver", "Colorado"],
+        ["Singapore", "Unknown capital city"],
+    ]
+    puts "====> RUNNING TESTS <====="
+    puts "------------------------"
 
-
+    test_cases.each do | input, expected |
+        output = `./erehW.rb #{input}`.strip
+        status = (output == expected) ? "OK ✅" : "FAIL ❌"
+        printf "%-12s → %-22s [%s]\n", input, output, status
+    end
+    puts "------------------------"
+    puts "====> END OF TESTS <====="
 end
 
 def erehw
@@ -26,7 +41,7 @@ def erehw
         return
     end
 
-    if ARGV.size < 1 || ARGV.size > 2
+    if ARGV.size != 1
         return 1
     end
 
@@ -40,7 +55,7 @@ def erehw
     end
 
     if abbrevation.nil?
-        puts "Unknown capital"
+        puts "Unknown capital city"
         return 
     end
 
