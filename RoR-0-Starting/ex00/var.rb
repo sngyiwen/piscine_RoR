@@ -1,3 +1,5 @@
+#!/usr/bin/env -S ruby -w
+
 def my_var
     a = 10
     b = "10"

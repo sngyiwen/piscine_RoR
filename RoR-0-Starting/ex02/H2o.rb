@@ -1,3 +1,5 @@
+#!/usr/bin/env -S ruby -w
+
 def convert_to_hash(data)
     hash = {}
     data.each do |name, number|

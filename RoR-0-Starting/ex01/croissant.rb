@@ -1,3 +1,5 @@
+#!/usr/bin/env -S ruby -w
+
 DEBUG = false
 
 def sorted_ascending?(arr)
