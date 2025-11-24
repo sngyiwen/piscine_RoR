@@ -1,3 +1,16 @@
+def convert_to_hash(data)
+    hash = {}
+    data.each do |name, number|
+        if hash[number].nil?
+            hash[number] = name
+        else 
+            hash[number] << name
+        end
+    end
+    hash
+end
+
+
 def h2o
     data = [['Caleb' , 24],
     ['Calixte' , 84],
@@ -15,3 +28,7 @@ def h2o
     ['Carlos' , 26],
     ['Carter' , 54],
     ['Casey' , 2]]
+
+    hash = convert_to_hash(data)
+
+    #to do sort and puts key and value
