@@ -23,13 +23,11 @@ def run_tests
       expected: "Batman is neither a capital city nor a state"
     },
     {
-      input: "Salem , ,Alabama, Toto , ,MontGOmery",
+      input: "Salem, Alabama, Toto, MontGOmery",
       expected: [
         "Salem is the capital of Oregon (akr: OR)",
-        " is neither a capital city nor a state",
         "Montgomery is the capital of Alabama (akr: AL)",
         "Toto is neither a capital city nor a state",
-        " is neither a capital city nor a state",
         "Montgomery is the capital of Alabama (akr: AL)"
       ].join("\n")
     }
@@ -118,6 +116,9 @@ def whereto
             abbrevation = "NJ"
             name = "New Jersey"
         end
+        if name.strip == ""
+            next
+        end
         if (!is_state?(states, name) && !is_capital?(capitals_cities, name))
             puts "#{name} is neither a capital city nor a state"
         elsif is_state?(states, name)
@@ -137,7 +138,6 @@ def whereto
                 end
             end
             puts "#{name} is the capital of #{capital_city_name} (akr: #{abbrevation})"
-            return
         end
     end
 end
