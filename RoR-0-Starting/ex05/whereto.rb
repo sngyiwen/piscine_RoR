@@ -54,11 +54,9 @@ def whereto
             abbrevation = "NJ"
             name = "New Jersey"
         end
-        if (!is_state?(states, name) || !is_capital?(capital_cities, name))
+        if (!is_state?(states, name) || !is_capital?(capitals_cities, name))
             puts "#{name} is neither a capital city nor a state"
-            return
-        end    
-        if is_state?(states, name)
+        elsif is_state?(states, name)
             abbrevation = states[name]
             capital_city_name = capitals_cities[abbrevation]
             puts "#{capital_city_name} is the capital of #{name} (akr: #{abbrevation})"
@@ -75,6 +73,7 @@ def whereto
                 end
             end
             puts "#{name} is the capital of #{capital_city_name} (akr: #{abbrevation})"
+            return
         end
     end
 end
