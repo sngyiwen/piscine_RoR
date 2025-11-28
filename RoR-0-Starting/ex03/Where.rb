@@ -44,13 +44,13 @@ def where
     end
 
     if ARGV.size < 1 || ARGV.size > 2
-        return 1
+        return 
     end
 
     if ARGV.size == 2
         new_jersey_test = ARGV.join(' ')
         if new_jersey_test != "New Jersey"
-            return 1
+            return 
         end
     end
     

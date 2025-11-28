@@ -1,6 +1,6 @@
 #!/usr/bin/env -S ruby -w
 
-TEST = true
+TEST = false
 
 def run_test
     test_cases = [
@@ -42,7 +42,7 @@ def erehw
     end
 
     if ARGV.size != 1
-        return 1
+        return 
     end
 
     capital = ARGV[0]
