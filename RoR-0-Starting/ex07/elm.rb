@@ -1,5 +1,7 @@
 #!/usr/bin/env -S ruby -w
 
+TEST = false
+
 def format_electron(e)
     e = e.strip
     if e == "1"
@@ -47,14 +49,46 @@ def elm (element)
     html
 end
 
+def read_elements(path)
+    elements = []
+
+    File.readlines(path).each do |line|
+        line = line.strip
+        if line.empty?
+            next
+        end
+        element = parse_line(line)
+        if element
+            elements << element
+        end
+    end
+    elements
+end
+
+
+def main
+    elements = read_elements("periodic_table.txt")
+end
 
 if __FILE__ ==  $PROGRAM_NAME
-    test_line = "Hydrogen = position:0, number:1, small: H, molar:1.00794, electron:1"
+    if TEST
+        test_line = "Hydrogen = position:0, number:1, small: H, molar:1.00794, electron:1"
     
-    puts "Parsed hash:"
-    element = parse_line(test_line)
-    p element
+        puts "Parsed hash:"
+        element = parse_line(test_line)
+        p element
 
-    puts "\nHTML output:"
-    puts elm(element)
+        puts "\nHTML output:"
+        puts elm(element)   
+        
+        puts "\n== HTML Parsing Test=="
+        elements = read_elements("periodic_table.txt")
+        puts "total elements parse: #{elements.size}"
+
+        elements.first(5).each do |line|
+            puts "#{line[:number]} : #{line[:name]} (pos #{line[:position]}, symbol #{line[:small]})"
+        end
+    else 
+        main 
+    end
 end
