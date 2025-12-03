@@ -2,6 +2,8 @@
 
 TEST = false
 
+TABLE_WIDTH = 18
+
 def format_electron(e)
     e = e.strip
     if e == "1"
@@ -35,7 +37,7 @@ def parse_line(line)
     }
 end
 
-def elm (element)
+def elm(element)
 
     html = "<td style= \"border: 1px solid black; padding: 10px\">\n"
     html << "    <h4>#{element[:name]}</h4>\n"
@@ -65,9 +67,39 @@ def read_elements(path)
     elements
 end
 
+def build_html(elements)
+    html = ""
+    html << "<!DOCTYPE html>\n"
+    html << "<html lang=\"en\">\n"
+    html << "<head>\n"
+    html << "    <meta charset=\"UTF-8\">\n"
+    html << "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+    html << "    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n"
+    html << "    <title>Periodic table</title>\n"
+    html << "    <style>\n"
+    html << "       table { border-collapse: collapse; }\n"
+    html << "       #ele { border: 1px solid black; padding: 10px; }\n"
+    html << "        td {min-width: 30px; }\n"
+    html << "    </style>\n"
+    html << "</head>\n"
+    html << "<body>\n"
+    html << "   <table>\n"
+
+    
+    
+
+    html << "   </table>\n"
+    html << "</body>\n"
+    html << "</html>\n"
+    
+    html
+end
+
 
 def main
     elements = read_elements("periodic_table.txt")
+    html = build_html(elements)
+    File.write("periodic_table.html", html)
 end
 
 if __FILE__ ==  $PROGRAM_NAME
