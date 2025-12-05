@@ -1,8 +1,10 @@
 #!/usr/bin/env -S ruby -w
 
 TEST = false
+DEBUG = false
 
 TABLE_WIDTH = 18
+TABLE_HEIGHT = 10
 
 def format_electron(e)
     e = e.strip
@@ -39,7 +41,7 @@ end
 
 def elm(element)
 
-    html = "<td style= \"border: 1px solid black; padding: 10px\">\n"
+    html = "<td id='ele'>\n"
     html << "    <h4>#{element[:name]}</h4>\n"
     html << "    <ul>\n"
     html << "       <li>No #{element[:number]}</li>\n"
@@ -67,6 +69,37 @@ def read_elements(path)
     elements
 end
 
+def populate_periodic_table(elements)
+    html = ""
+    cell_position  = 0
+    elements.each_with_index do |element, index|
+        if DEBUG
+            puts "this is in the do loop #{index} : #{element[:name]}"
+        end
+       if element[:position] == 0
+            html << "<tr>\n"
+       end
+       if element[:position] == cell_position
+            html << elm(element)
+            cell_position += 1
+       else
+            while cell_position < element[:position]
+                html << "<td></td>\n"
+                cell_position += 1
+            end
+            if cell_position == element[:position]
+                html << elm(element)
+                cell_position += 1
+            end
+       end
+       if element[:position] == TABLE_WIDTH - 1
+            html << "</tr>\n"
+            cell_position = 0
+       end
+    end
+    html
+end
+
 def build_html(elements)
     html = ""
     html << "<!DOCTYPE html>\n"
@@ -85,8 +118,7 @@ def build_html(elements)
     html << "<body>\n"
     html << "   <table>\n"
 
-    
-    
+    html << populate_periodic_table(elements)
 
     html << "   </table>\n"
     html << "</body>\n"
@@ -97,7 +129,12 @@ end
 
 
 def main
-    elements = read_elements("periodic_table.txt")
+    file_path = "periodic_table.txt"
+    unless File.exist?(file_path)
+        warn "Error: The required file '#{file_path}' was not found in the current directory."
+        exit 1
+    end
+    elements = read_elements(file_path)
     html = build_html(elements)
     File.write("periodic_table.html", html)
 end
@@ -117,7 +154,7 @@ if __FILE__ ==  $PROGRAM_NAME
         elements = read_elements("periodic_table.txt")
         puts "total elements parse: #{elements.size}"
 
-        elements.first(5).each do |line|
+        elements.first(88).each do |line|
             puts "#{line[:number]} : #{line[:name]} (pos #{line[:position]}, symbol #{line[:small]})"
         end
     else 
