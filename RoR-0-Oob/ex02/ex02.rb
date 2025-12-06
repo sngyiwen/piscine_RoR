@@ -1,4 +1,32 @@
 #!/usr/bin/env -S ruby -w
+
+class StandardError
+
+end
+
+class Dup_file < StandardError
+
+    def show_state
+    end
+
+    def correct
+    end
+
+    def explain
+    end
+end
+
+class body_closedd < StandardError
+    def show_state
+    end
+
+    def correct
+    end
+
+    def explain
+    end
+end
+
 class Html
     attr_reader :page_name
 
@@ -6,7 +34,7 @@ class Html
         @page_name = name
         @filename = "#{name}.html"
         @body_open = false
-        @body_close = false
+        @body_closed = false
         head
     end
 
@@ -22,7 +50,7 @@ class Html
             f.puts"</head>"
             f.puts"<body>"
         end
-        @boody_open = true
+        @body_open = true
     end
 
     def dump(str)
@@ -30,7 +58,7 @@ class Html
             raise "There is no body tag in #{@filename}"
         end
 
-        if @body_close
+        if @body_closed
             raise "The body has already been closed in #{@filename}"
         end
         line = "    <p>#{str}</p>\n"
@@ -41,7 +69,7 @@ class Html
     end
     
     def finish
-        if @body_close
+        if @body_closed
             raise "#{@filename} has already been closed"
         end
 
@@ -52,7 +80,7 @@ class Html
         File.open(@filename, "a") do |f|
             f.write lines
         end
-        @body_close = true
+        @body_closed = true
         lines.bytesize
     end
 end
@@ -61,4 +89,4 @@ if $PROGRAM_NAME == __FILE__
     a = Html.new("test")
     10.times{|x| a.dump("titi_number#{x}")}
     a.finish
-end
+en
