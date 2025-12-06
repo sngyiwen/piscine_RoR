@@ -1,9 +1,5 @@
 #!/usr/bin/env -S ruby -w
 
-class StandardError
-
-end
-
 class Dup_file < StandardError
 
     def show_state
@@ -16,7 +12,7 @@ class Dup_file < StandardError
     end
 end
 
-class body_closedd < StandardError
+class body_closed < StandardError
     def show_state
     end
 
@@ -39,7 +35,7 @@ class Html
     end
 
     def head
-            if head.exist?(@filename) 
+            if File.exist?(@filename) 
                 raise "A file named #{@filename} already exists!"
             end
             File.open(@filename, "w") do |f|
@@ -76,7 +72,7 @@ class Html
         unless @body_open
             raise "There is no body tag in #{@filename}"
         end
-        lines = "</body>\n</html>"
+        lines = "</body>\n</html>\n"
         File.open(@filename, "a") do |f|
             f.write lines
         end
@@ -89,4 +85,4 @@ if $PROGRAM_NAME == __FILE__
     a = Html.new("test")
     10.times{|x| a.dump("titi_number#{x}")}
     a.finish
-en
+end
