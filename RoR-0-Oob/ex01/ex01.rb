@@ -6,13 +6,13 @@ class Html
         @page_name = name
         @filename = "#{name}.html"
         @body_open = false
-        @body_close = false
+        @body_closed = false
         head
     end
 
     def head
-            if head.exist?(@filename) 
-                raise "A file named #{@filename} already exists!"
+            if File.exist?(@filename) 
+                raise "#{@filename} already exists!"
             end
             File.open(@filename, "w") do |f|
             f.puts"<!DOCTYPE html>"
@@ -22,7 +22,7 @@ class Html
             f.puts"</head>"
             f.puts"<body>"
         end
-        @boody_open = true
+        @body_open = true
     end
 
     def dump(str)
@@ -30,30 +30,32 @@ class Html
             raise "There is no body tag in #{@filename}"
         end
 
-        if @body_close
+        if @body_closed
             raise "The body has already been closed in #{@filename}"
         end
         line = "    <p>#{str}</p>\n"
         File.open(@filename, "a") do |f|
             f.write line
         end
-        line.bytesize
+        # line.bytesize
+        nil
     end
     
     def finish
-        if @body_close
+        if @body_closed
             raise "#{@filename} has already been closed"
         end
 
         unless @body_open
             raise "There is no body tag in #{@filename}"
         end
-        lines = "</body>\n</html>"
+        lines = "</body>\n</html>\n"
         File.open(@filename, "a") do |f|
             f.write lines
         end
-        @body_close = true
-        lines.bytesize
+        @body_closed = true
+        # lines.bytesize
+        nil
     end
 end
 
