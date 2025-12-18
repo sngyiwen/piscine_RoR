@@ -1,25 +1,64 @@
 #!/usr/bin/env -S ruby -w
 
 class Dup_file < StandardError
+    attr_reader :old_path
+    attr_reader :new_path
+    attr_reader :new_filename
+
+    def initialize(filename)
+        @filename = filename
+        @old_path = File.expand_path(filename)
+        @new_filename = filename
+
+        loop do 
+            if new_filename.end_with?(".html")
+                base = filename[0...-5]
+                new_filename = base + ".new.html"
+            else
+                new_filename = new_filename + ".new.html"
+            end
+            unless File.exist?(new_filename)
+                break
+        end
+        @new_path = File.expand_path(new_filename)
+        @new_filename = new_filename    
+        super()
+    end
 
     def show_state
+        puts "A file named #{@filename} was already there: #{@old_path}"
     end
 
     def correct
+        puts "Appended .new in order to create requested file: #{@new_path}"
+        @new_filename
     end
 
     def explain
+        puts "The new file has been created successfully at: #{@new_path}"
     end
 end
 
-class body_closed < StandardError
+class Body_closed < StandardError
+    attr_reader :filename
+    attr_reader :text
+
+    def initialize(filename, text)
+        @filename = filename
+        @text = text
+        super()
+    end
+
     def show_state
+        lines = File.readlines(@filename)
     end
 
     def correct
+        puts "Do not call dump/finish after the body is closed."
     end
 
     def explain
+        puts "Once </body> tag is used to close the body tag, you cannot add more content."
     end
 end
 
@@ -31,14 +70,25 @@ class Html
         @filename = "#{name}.html"
         @body_open = false
         @body_closed = false
-        head
+        loop do 
+            begin 
+                head
+                break
+            rescue Dup_file => e
+                e.show_state
+                e.correct
+                e.explain
+                @filename = e.new_filename
+                @page_name = File.basename(e.new_filename, ".html")
+            end
+        end
     end
 
     def head
-            if File.exist?(@filename) 
-                raise "A file named #{@filename} already exists!"
-            end
-            File.open(@filename, "w") do |f|
+        if File.exist?(@filename) 
+            raise Dup_file.new(@filename)
+        end
+        File.open(@filename, "w") do |f|
             f.puts"<!DOCTYPE html>"
             f.puts"<html>"
             f.puts"<head>"
@@ -47,42 +97,67 @@ class Html
             f.puts"<body>"
         end
         @body_open = true
+        nil
     end
 
     def dump(str)
-        unless @body_open
-            raise "There is no body tag in #{@filename}"
+        begin 
+            unless @body_open
+                raise "There is no body tag in #{@filename}"
+            end
+            if @body_closed
+                raise Body_closed.new(@filename)
+            end
+            line = "    <p>#{str}</p>\n"
+            File.open(@filename, "a") do |f|
+                f.write line
+            end
+            nil
+        rescue Body_closed => e
+            e.show_state
+            e.correct
+            e.explain
+            nil
+        rescue RuntimeError => e
+            puts e.message
+            nil
         end
-
-        if @body_closed
-            raise "The body has already been closed in #{@filename}"
-        end
-        line = "    <p>#{str}</p>\n"
-        File.open(@filename, "a") do |f|
-            f.write line
-        end
-        line.bytesize
+        # line.bytesize
     end
     
     def finish
-        if @body_closed
-            raise "#{@filename} has already been closed"
-        end
+        begin 
+            if @body_closed
+                raise Body_closed.new(@filename)
+            end
 
-        unless @body_open
-            raise "There is no body tag in #{@filename}"
+            unless @body_open
+                raise "There is no body tag in #{@filename}"
+            end
+
+            lines = "</body>\n</html>\n"
+            File.open(@filename, "a") do |f|
+                f.write lines
+            end
+            @body_closed = true
+            nil
+        rescue Body_closed => e
+            e.show_state
+            e.correct
+            e.explain
+            nil
+        rescue RuntimeError => e
+            puts e.message
+            nil
         end
-        lines = "</body>\n</html>\n"
-        File.open(@filename, "a") do |f|
-            f.write lines
-        end
-        @body_closed = true
-        lines.bytesize
+        # lines.bytesize
     end
 end
 
 if $PROGRAM_NAME == __FILE__
     a = Html.new("test")
-    10.times{|x| a.dump("titi_number#{x}")}
+    3.times{|x| a.dump("titi_number#{x}")}
     a.finish
-end
+    a.dump("after close")
+    a.finish
+end   
