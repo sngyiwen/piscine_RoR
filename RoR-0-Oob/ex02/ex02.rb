@@ -96,6 +96,80 @@ class Body_closed < StandardError
     end
 end
 
+class Html
+    attr_reader :page_name
+
+    def head 
+        if File.exist?(@filename)
+            raise Dup_file(@filename)
+        end
+        
+        File.open(@filename, "w") do |f|
+            f.puts "<!DOCTYPE html>"
+            f.puts "<html>"
+            f.puts "<head>"
+            f.puts "<title>#{@page_name}</title>"
+            f.puts "</head>"
+            f.puts "<body>"
+        end
+        @body_open = true
+    end
+
+    def initialize(name)
+        @page_name = name
+        @filename = "#{name}.html"
+        @body_open = false
+        @body_closed = false
+
+        loop do 
+            begin
+                head
+                break
+            rescue Dup_file => e
+                e.show_state
+                e.correct
+                e.explain 
+                @filename = e.new_filename
+                @page_name = File.basename(e.new_filename, ".html")
+            end
+        end
+    end
+
+    def dump(str)
+        unless @body_open
+            raise RuntimeError, "There is no body tag in #{@filename}"
+        end
+        if @body_closed
+            begin 
+                raise Body_closed.new(@filename, str)
+            rescue Body_closed => e
+                e.show_state
+                e.correct
+                e.explain
+                return 
+            end
+        end
+        File.open(@filename, "a") do |f|
+            f.puts "    <p>#{str}</p>"
+        end
+    end
+
+    def finish
+        if @body_closed
+            raise RuntimeError, "#{@filename} has already been closed"
+        end
+
+        unless @body_open
+            raise RuntimeError, "There is no body tag in #{@filename}"
+        end
+
+        File.open(@filename, "a") do |f|
+            f.puts "</body"
+            f.puts "</html>"
+        end
+        @body_closed = true
+    end
+end
 
 if $PROGRAM_NAME == __FILE__
     a = Html.new("test")
