@@ -8,17 +8,18 @@ class Dup_file < StandardError
     def initialize(filename)
         @filename = filename
         @old_path = File.expand_path(filename)
-        @new_filename = filename
+        new_filename = filename
 
         loop do 
             if new_filename.end_with?(".html")
-                base = filename[0...-5]
+                base = new_filename[0...-5]
                 new_filename = base + ".new.html"
             else
                 new_filename = new_filename + ".new.html"
             end
             unless File.exist?(new_filename)
                 break
+            end
         end
         @new_path = File.expand_path(new_filename)
         @new_filename = new_filename    
@@ -82,7 +83,7 @@ class Body_closed < StandardError
                 end
             end
 
-            new_lines << << "    <p>#{@text}</p>\n"
+            new_lines << "    <p>#{@text}</p>\n"
 
             new_lines << "</body>\n"
             new_lines << "</html>\n"
@@ -101,7 +102,7 @@ class Html
 
     def head 
         if File.exist?(@filename)
-            raise Dup_file(@filename)
+            raise Dup_file.new(@filename)
         end
         
         File.open(@filename, "w") do |f|
@@ -164,7 +165,7 @@ class Html
         end
 
         File.open(@filename, "a") do |f|
-            f.puts "</body"
+            f.puts "</body>"
             f.puts "</html>"
         end
         @body_closed = true
@@ -172,9 +173,32 @@ class Html
 end
 
 if $PROGRAM_NAME == __FILE__
+    puts "==> Test 1: Creating a file <=="
     a = Html.new("test")
-    3.times{|x| a.dump("titi_number#{x}")}
+    3.times { |x| a.dump("titi_number#{x}") }
     a.finish
-    a.dump("after close")
-    a.finish
-end   
+
+    puts "==> Test 2: Attempting to create a duplicate file <=="
+    b = Html.new("test")
+    b.dump("this is content in new file")
+    b.finish
+
+    puts "==> Test 3: Dump after body is closed <=="
+    a.dump("trying to add after close")
+
+    puts "==> Test 4: Finish after alread closed <=="
+    begin
+        a.finish
+    rescue RuntimeError => e
+        puts "Error caught: #{e.message}"
+    end
+
+    puts "\n=== Test 5: Check file contents ==="
+    puts "\n--- test.html ---"
+    puts File.read("test.html")
+
+    if File.exists?("test.new.html")
+        puts "\n--- test.new.html ---"
+        puts File.read("test.new.html")
+    end
+end
