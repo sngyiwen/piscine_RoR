@@ -54,7 +54,7 @@ class Body_closed < StandardError
         lines = File.readlines(@filename)
         lines.each_with_index do |line, idx|
             if line.strip == "</body>"
-                puts "In #{@filename} body was closed :"
+                puts "In #{@filename} body was closed: "
                 puts "> ln :#{idx + 1} </body> : text has been inserted and tag moved at the end of it."
                 return
             end
