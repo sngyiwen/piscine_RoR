@@ -23,14 +23,14 @@ class Elem
         if @tag_type == 'simple'
             result = "<#{@tag}#{attrs} />"
         elsif @tag_type == 'double'
-            result = "<#{@tag}>#{@content.to_s}>" #i may have to change this
-
-            # if @content.is_a?(Text)
-
+            # result = "<#{@tag}>#{@content.to_s}>" #i may have to change this
+            if @content.is_a?(Text)
+                result = "<#{@tag}>#{@content.to_s}"
+            end
             # elsif @content.is_a?(Array)
            
             # elsif @content.is_a?(String)
-        result += "</#{@tag}>"
+            result += "</#{@tag}>"
         end
     end
 
