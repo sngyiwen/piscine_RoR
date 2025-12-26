@@ -22,15 +22,30 @@ class Elem
         attrs = format_attributes
         if @tag_type == 'simple'
             result = "<#{@tag}#{attrs} />"
+            return result
         elsif @tag_type == 'double'
             # result = "<#{@tag}>#{@content.to_s}>" #i may have to change this
+            result = "<#{@tag}>#{attrs}"
             if @content.is_a?(Text)
-                result = "<#{@tag}>#{@content.to_s}"
+                result += @content.to_s
+
+            elsif @content.is_a?(String)
+                if @content.empty?
+                    result += "\n"
+                else
+                    result += @content
+                end
+            
+            elsif @content.is_a?(Array)
+                result += "\n"
+                @content.each do |item|
+                    result += item.to_s + "\n"
+                end
+            else
+                result += "\n"
             end
-            # elsif @content.is_a?(Array)
-           
-            # elsif @content.is_a?(String)
             result += "</#{@tag}>"
+            return result
         end
     end
 
