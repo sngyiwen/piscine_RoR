@@ -18,6 +18,12 @@ class Elem
         @tag_type = tag_type
     end
 
+    def add_content(*new_content)
+        @content = unless @content.is_a?(Array)
+            [@content]
+        @content += new_content.flatten(1)
+    end
+    
     def to_s
         attrs = format_attributes
         if @tag_type == 'simple'
