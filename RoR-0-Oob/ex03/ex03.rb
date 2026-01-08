@@ -11,6 +11,8 @@ class Text
 end
 
 class Elem
+    attr_reader :tag, :content, :tag_type, :opt
+    
     def initialize(tag, content = [], tag_type = 'double', opt = {})
         @tag = tag
         @content = content
@@ -19,41 +21,38 @@ class Elem
     end
 
     def add_content(*new_content)
-        @content = unless @content.is_a?(Array)
-            [@content]
+        @content = [@content] unless @content.is_a?(Array)
         @content += new_content.flatten(1)
     end
-    
-    def to_s
+
+    def to_s(wrap_quotes = true)
         attrs = format_attributes
         if @tag_type == 'simple'
             result = "<#{@tag}#{attrs} />"
-            return result
         elsif @tag_type == 'double'
-            # result = "<#{@tag}>#{@content.to_s}>" #i may have to change this
-            result = "<#{@tag}>#{attrs}"
-            if @content.is_a?(Text)
-                result += @content.to_s
+            result = "<#{@tag}#{attrs}>"
 
+            if content.is_a?(Text)
+                result += @content.to_s
             elsif @content.is_a?(String)
-                if @content.empty?
-                    result += "\n"
-                else
-                    result += @content
-                end
-            
+                result += @content.empty? ? "\\n" : @content
             elsif @content.is_a?(Array)
-                result += "\n"
+                result += "\\n"
                 @content.each do |item|
-                    result += item.to_s + "\n"
+                    if item.is_a?(Elem)
+                        result += item.to_s(false) + "\\n"
+                    else
+                        result += item.to_s + "\\n"
+                    end
                 end
             else
-                result += "\n"
+                result += "\\n"
             end
             result += "</#{@tag}>"
-            return result
         end
-    end
+        wrap_quotes ? "\"#{result}\"" : result    
+    end    
+    private
 
     def format_attributes
         if @opt.empty?
