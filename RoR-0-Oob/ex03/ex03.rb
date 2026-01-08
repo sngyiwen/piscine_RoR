@@ -63,9 +63,45 @@ class Elem
 end
 
 if $PROGRAM_NAME == __FILE__
+    #test 1
     my_text = Text.new("hello world")
     my_tag = Elem.new("h1", my_text)
     img = Elem.new('img', '', 'simple', {'src' => 'http://i.imgur.com/pfp3T.jpg'})
     puts img
-    puts my_tag.to_s 
+    puts my_tag.to_s
+    puts
+    #simple element with text (not array)
+    h1 = Elem.new('h1', Text.new('"Oh no, not again!"'))
+    puts h1
+    puts
+
+    h2 = Elem.new('h2', 'Hello')
+    puts h2.to_s
+    puts
+
+    p_tag = Elem.new('p', 'This is raw HTML.')
+    puts p_tag.to_s(false)
+    puts
+
+    #empty body
+    body = Elem.new('body')
+    puts body
+    puts
+
+    #elements with attributes (simple tag)
+    img = Elem.new('img', '', 'simple', {'src' => 'https://i.imgur.com/pfpeT.jpg'})
+    puts img
+    puts
+
+    html = Elem.new('html')
+    head = Elem.new('head')
+    body2 = Elem.new('body')
+    title = Elem.new('title', Text.new('"Hello ground!"'))
+    h1_2 = Elem.new('h1', Text.new('"Oh no, not again!"'))
+    img2 = Elem.new('img', '', 'simple', {'src' => 'https://i.imgur.com/pfp3T.jpg'})
+
+    head.add_content(title)
+    body2.add_content(h1_2, img2)
+    html.add_content(head, body2)
+    puts html
 end
