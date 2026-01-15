@@ -241,7 +241,21 @@ class Page
         end
     end
 
-    
+    def validate_span
+        if elem.content.is_a?(Text)
+            return validate(elem.content)
+        elsif elem.content.is_a?(Array)
+            elem.content.each do |child|
+                valid = child.is_a?(Text) || child.is_a?(P)
+                return false unless valid
+                return false unless validate(child)
+            end
+            return true
+
+        else
+            return false
+        end
+    end
 
     def validate_li(elem)
         return false unless elem.content.is_a?(Text)
