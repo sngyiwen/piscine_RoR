@@ -206,8 +206,8 @@ class Page
             validate_head(elem)
         # when Body
         #     validate_body(elem)
-        # when Title
-        #     validate_title(elem)
+        when Title
+            validate_title(elem)
         when H1, H2
             validate_heading(elem)
         # when Li
@@ -246,14 +246,14 @@ class Page
     def validate_html(elem)
         puts "Currently evaluating a Html :"
         puts '- root element of type "html"'
-        puts "-Html -> Must contains a Head AND a Body after it"
+        puts "- Html -> Must contains a Head AND a Body after it"
 
         return false unless elem.content.is_a?(Array)
         return false unless elem.content.length == 2
         return false unless elem.content[0].is_a?(Head)
         return false unless elem.content[1].is_a?(Body)
 
-        puts "Head is ok?"
+        puts "Head is OK"
         
         elem.content.each do |child|
             return false unless validate(child)
