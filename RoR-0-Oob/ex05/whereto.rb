@@ -229,8 +229,8 @@ class Page
             validate_table(elem)
         when Div
             validate_div(elem)
-        # when Img
-        #     validate_img(elem)
+        when Img
+            validate_img(elem)
         when Text
             validate_text(elem)
         when Meta, Hr, Br
@@ -240,14 +240,27 @@ class Page
         end
     end
 
+    def validate_img(elem)
+        puts "Currently evaluating a Img :"
+        return false unless elem.opt.key?(:src)
+        return false unless elem.opt[:src].is_a?(Text)
+
+        puts "Img content is OK"
+        true
+    end
     def validate_heading(elem)
+        return false unless elem.content.is_a?(Text)
+        validate(elem.content)
+    end
+
+    def validate_th_td(elem)
         return false unless elem.content.is_a?(Text)
         validate(elem.content)
     end
 
     def validate_tr(elem)
         return false unless elem.content.is_a?(Array)
-        return false unless elem.content.empty?
+        return false if elem.content.empty?
 
         has_th = false
         has_td = false
@@ -267,7 +280,7 @@ class Page
     end
 
     def validate_table(elem)
-        return false unless content.is_a?(Array)
+        return false unless elem.content.is_a?(Array)
 
         elem.content.each do  |child|
             return false unless child.is_a?(Tr)
@@ -302,7 +315,7 @@ class Page
         elem.content.each do |child|
             valid = child.is_a?(H1) || child.is_a?(H2) || child.is_a?(Div) ||
                     child.is_a?(Table) || child.is_a?(Ul) || child.is_a?(Ol) ||
-                    child.is_a?(Span) || child.is_a?(Text)
+                    child.is_a?(Span) || child.is_a?(Text) || child.is_a?(Img)
 
             return false unless valid
             return false unless validate(child)
