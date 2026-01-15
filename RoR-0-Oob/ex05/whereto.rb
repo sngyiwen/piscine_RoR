@@ -294,7 +294,7 @@ class Page
     end
 
     def validate_body(elem)
-        if elem.content.is_a(Array) && !elem.content.empty?
+        if elem.content.is_a?(Array) && !elem.content.empty?
             puts "Evaluating a multiple node"
         end
         return false unless elem.content.is_a?(Array)
