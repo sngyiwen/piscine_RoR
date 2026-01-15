@@ -190,6 +190,9 @@ class Page
         result = validate(@root)
         if result
             puts "FILE IS OK"
+        else
+            puts "File is fuckeddd" #lolll
+
         end
         result
     end
@@ -204,28 +207,28 @@ class Page
             validate_html(elem)
         when Head 
             validate_head(elem)
-        # when Body
-        #     validate_body(elem)
+        when Body
+            validate_body(elem)
         when Title
             validate_title(elem)
         when H1, H2
             validate_heading(elem)
-        # when Li
+        # # when Li
         #     validate_li(elem)
-        # when Th, Td
-        #     validate_th_td(elem)
+        when Th, Td
+            validate_th_td(elem)
         # when P
         #     validate_p(elem)
-        # when Span
-        #     validate_span(elem)
-        # when Ul, Ol
-        #     validate_ul_ol(elem)
-        # when Tr
-        #     validate_tr(elem)
-        # when Table
-        #     validate_table(elem)
-        # when Div
-        #     validate_div(elem)
+        # # when Span
+        # #     validate_span(elem)
+        when Ul, Ol
+            validate_ul_ol(elem)
+        when Tr
+            validate_tr(elem)
+        when Table
+            validate_table(elem)
+        when Div
+            validate_div(elem)
         # when Img
         #     validate_img(elem)
         when Text
@@ -235,6 +238,76 @@ class Page
         else
             false
         end
+    end
+
+    def validate_heading(elem)
+        return false unless elem.content.is_a?(Text)
+        validate(elem.content)
+    end
+
+    def validate_tr(elem)
+        return false unless elem.content.is_a?(Array)
+        return false unless elem.content.empty?
+
+        has_th = false
+        has_td = false
+
+        elem.content.each do |child|
+            if child.is_a?(Th)
+                has_th = true
+            elsif child.is_a?(Td)
+                has_td = true
+            else 
+                return false
+            end
+            return false unless validate(child)
+        end
+        return false if has_th && has_td
+        true
+    end
+
+    def validate_table(elem)
+        return false unless content.is_a?(Array)
+
+        elem.content.each do  |child|
+            return false unless child.is_a?(Tr)
+            return false unless validate(child)
+        end
+        true
+    end
+
+    def validate_div(elem)
+        if elem.content.is_a(Array) && !elem.content.empty?
+            puts "Evaluating a multiple node"
+        end
+        return false unless elem.content.is_a?(Array)
+
+        elem.content.each do |child|
+            valid = child.is_a?(H1) || child.is_a?(H2) || child.is_a?(Div) ||
+                    child.is_a?(Table) || child.is_a?(Ul) || child.is_a?(Ol) ||
+                    child.is_a?(Span) || child.is_a?(Text)
+
+            return false unless valid
+            return false unless validate(child)
+        end
+        true
+    end
+
+    def validate_body(elem)
+        if elem.content.is_a(Array) && !elem.content.empty?
+            puts "Evaluating a multiple node"
+        end
+        return false unless elem.content.is_a?(Array)
+
+        elem.content.each do |child|
+            valid = child.is_a?(H1) || child.is_a?(H2) || child.is_a?(Div) ||
+                    child.is_a?(Table) || child.is_a?(Ul) || child.is_a?(Ol) ||
+                    child.is_a?(Span) || child.is_a?(Text)
+
+            return false unless valid
+            return false unless validate(child)
+        end
+        true
     end
 
     def valid_element_type?(elem)
@@ -260,30 +333,35 @@ class Page
         end
         true
     end
+
+    def validate_head(elem)
+        return false unless elem.content.is_a?(Array)
+        return false unless elem.content.length == 1
+        return false unless elem.content[0].is_a?(Title)
+
+        validate(elem.content[0])
+    end
+
+    def validate_title(elem)
+        return false unless elem.content.is_a?(Text)
+
+        validate(elem.content)
+    end
+
+    def validate_text(elem)
+        puts "Currently evaluating a Text :"
+        puts "- Text -> Must contains a simple string"
+
+        return false unless elem.content.is_a?(String)
+        puts "Text content is OK"
+        true
+    end
+
+
+
 end
 
-def validate_head(elem)
-    return false unless elem.content.is_a?(Array)
-    return false unless elem.content.length == 1
-    return false unless elem.content[0].is_a?(Title)
 
-    validate(elem.content[0])
-end
-
-def validate_title(elem)
-    return false unless elem.content.is_a?(Text)
-
-    validate(elem.content)
-end
-
-def validate_text(elem)
-    puts "Currently evaluating a Text :"
-    puts "-Text -> Must contains a simple string"
-
-    return false unless elem.content.is_a?(String)
-    puts "Text content is OK"
-    true
-end
 
 if $PROGRAM_NAME == __FILE__
 
@@ -303,16 +381,16 @@ if $PROGRAM_NAME == __FILE__
     test.is_valid?
 
  puts "="*70
-    puts "TEST FROM PDF ASSIGNMENT (Must match expected output!)"
-    puts "="*70
+    # puts "TEST FROM PDF ASSIGNMENT (Must match expected output!)"
+    # puts "="*70
     
-    # Exact test from the PDF
-    result = Html.new([Head.new([Title.new("Hello ground!")]),
-                       Body.new([H1.new("Oh no, not again!"),
-                       Img.new([], {'src':'http://i.imgur.com/pfp3T.jpg'}) 
-                       ]) 
-                    ])
-    puts result
+    # # Exact test from the PDF
+    # result = Html.new([Head.new([Title.new("Hello ground!")]),
+    #                    Body.new([H1.new("Oh no, not again!"),
+    #                    Img.new([], {'src':'http://i.imgur.com/pfp3T.jpg'}) 
+    #                    ]) 
+    #                 ])
+    # puts result
     
     puts "\n" + "="*70
     puts "BASIC ELEMENT TESTS"
