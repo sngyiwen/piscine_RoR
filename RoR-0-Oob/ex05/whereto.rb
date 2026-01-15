@@ -11,7 +11,9 @@ class Text
 end
 
 class Elem
-    
+
+    attr_reader :tag, :content, :tag_type, :opt
+
     def initialize(tag, content = [], tag_type = 'double', opt = {})
         @tag = tag
         @content = content
@@ -179,9 +181,127 @@ class Span < Elem
     end
 end
     
+class Page
+    def initialize(elem)
+        @root = elem
+    end
 
+    def is_valid?
+        result = validate(@root)
+        if result
+            puts "FILE IS OK"
+        end
+        result
+    end
+
+    private
+    
+    def validate(elem)
+        return false unless valid_element_type?(elem) 
+
+        case elem
+        when Html
+            validate_html(elem)
+        when Head 
+            validate_head(elem)
+        # when Body
+        #     validate_body(elem)
+        # when Title
+        #     validate_title(elem)
+        when H1, H2
+            validate_heading(elem)
+        # when Li
+        #     validate_li(elem)
+        # when Th, Td
+        #     validate_th_td(elem)
+        # when P
+        #     validate_p(elem)
+        # when Span
+        #     validate_span(elem)
+        # when Ul, Ol
+        #     validate_ul_ol(elem)
+        # when Tr
+        #     validate_tr(elem)
+        # when Table
+        #     validate_table(elem)
+        # when Div
+        #     validate_div(elem)
+        # when Img
+        #     validate_img(elem)
+        when Text
+            validate_text(elem)
+        when Meta, Hr, Br
+            true
+        else
+            false
+        end
+    end
+
+    def valid_element_type?(elem)
+        valid_types = [Html, Head, Body, Title, Meta, Img, Table, Th, Tr, Td, Ul, Ol, Li, H1, H2, P, Div, Span, Hr, Br, Text]
+
+        valid_types.any? { |type| elem.is_a?(type) }
+    end
+
+    def validate_html(elem)
+        puts "Currently evaluating a Html :"
+        puts '- root element of type "html"'
+        puts "-Html -> Must contains a Head AND a Body after it"
+
+        return false unless elem.content.is_a?(Array)
+        return false unless elem.content.length == 2
+        return false unless elem.content[0].is_a?(Head)
+        return false unless elem.content[1].is_a?(Body)
+
+        puts "Head is ok?"
+        
+        elem.content.each do |child|
+            return false unless validate(child)
+        end
+        true
+    end
+end
+
+def validate_head(elem)
+    return false unless elem.content.is_a?(Array)
+    return false unless elem.content.length == 1
+    return false unless elem.content[0].is_a?(Title)
+
+    validate(elem.content[0])
+end
+
+def validate_title(elem)
+    return false unless elem.content.is_a?(Text)
+
+    validate(elem.content)
+end
+
+def validate_text(elem)
+    puts "Currently evaluating a Text :"
+    puts "-Text -> Must contains a simple string"
+
+    return false unless elem.content.is_a?(String)
+    puts "Text content is OK"
+    true
+end
 
 if $PROGRAM_NAME == __FILE__
+
+    puts "="*70
+    puts "Test 1: valid html from pdf "
+    puts "="*70
+
+    toto = Html.new([
+        Head.new([Title.new(Text.new("Hello ground!"))]),
+        Body.new([
+            H1.new(Text.new("Oh no, not again!")),
+            Img.new([], {'src': Text.new('http://i.imgur.com/pfp3T.jpg')})
+        ])
+    ])
+
+    test = Page.new(toto)
+    test.is_valid?
+
  puts "="*70
     puts "TEST FROM PDF ASSIGNMENT (Must match expected output!)"
     puts "="*70
@@ -189,7 +309,9 @@ if $PROGRAM_NAME == __FILE__
     # Exact test from the PDF
     result = Html.new([Head.new([Title.new("Hello ground!")]),
                        Body.new([H1.new("Oh no, not again!"),
-                       Img.new([], {'src':'http://i.imgur.com/pfp3T.jpg'}) ]) ])
+                       Img.new([], {'src':'http://i.imgur.com/pfp3T.jpg'}) 
+                       ]) 
+                    ])
     puts result
     
     puts "\n" + "="*70
