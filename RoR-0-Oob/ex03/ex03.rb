@@ -32,7 +32,7 @@ class Elem
         elsif @tag_type == 'double'
             result = "<#{@tag}#{attrs}>"
 
-            if content.is_a?(Text)
+            if @content.is_a?(Text)
                 result += @content.to_s
             elsif @content.is_a?(String)
                 result += @content.empty? ? "\\n" : @content

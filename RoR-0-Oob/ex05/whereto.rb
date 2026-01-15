@@ -214,14 +214,14 @@ class Page
             validate_title(elem)
         when H1, H2
             validate_heading(elem)
-        # # when Li
-        #     validate_li(elem)
+        when Li
+            validate_li(elem)
         when Th, Td
             validate_th_td(elem)
-        # when P
-        #     validate_p(elem)
-        # # when Span
-        # #     validate_span(elem)
+        when P
+            validate_p(elem)
+        when Span
+            validate_span(elem)
         when Ul, Ol
             validate_ul_ol(elem)
         when Tr
@@ -241,6 +241,17 @@ class Page
         end
     end
 
+    
+
+    def validate_li(elem)
+        return false unless elem.content.is_a?(Text)
+        validate(elem.content)
+    end
+
+    def validate_p(elem)
+        return false unless elem.content.is_a?(Text)
+        validate(elem.content)
+    end
     def validate_img(elem)
         puts "Currently evaluating a Img :"
         return false unless elem.opt.key?(:src)
