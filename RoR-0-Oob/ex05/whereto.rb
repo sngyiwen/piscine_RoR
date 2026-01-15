@@ -189,13 +189,14 @@ class Page
     def is_valid?
         result = validate(@root)
         if result
-            puts "FILE IS OK"
+            puts "          FILE IS OK"
         else
             puts "File is fuckeddd" #lolll
-
+            
         end
         result
     end
+    alias_method :isvalid, :is_valid?
 
     private
     
@@ -307,12 +308,12 @@ class Page
     end
 
     def validate_body(elem)
+        return false unless elem.content.is_a?(Array)
         if elem.content.is_a?(Array) && !elem.content.empty?
             puts "Evaluating a multiple node"
         end
-        return false unless elem.content.is_a?(Array)
-
         elem.content.each do |child|
+            # puts "Evaluating a multiple node" if elem.content.length > 1
             valid = child.is_a?(H1) || child.is_a?(H2) || child.is_a?(Div) ||
                     child.is_a?(Table) || child.is_a?(Ul) || child.is_a?(Ol) ||
                     child.is_a?(Span) || child.is_a?(Text) || child.is_a?(Img)
@@ -348,6 +349,8 @@ class Page
     end
 
     def validate_head(elem)
+        puts "Evaluating a multiple node"
+
         return false unless elem.content.is_a?(Array)
         return false unless elem.content.length == 1
         return false unless elem.content[0].is_a?(Title)
@@ -363,13 +366,12 @@ class Page
 
     def validate_text(elem)
         puts "Currently evaluating a Text :"
-        puts "- Text -> Must contains a simple string"
+        puts "-Text -> Must contains a simple string"
 
         return false unless elem.content.is_a?(String)
         puts "Text content is OK"
         true
     end
-
 
 
 end
@@ -392,8 +394,14 @@ if $PROGRAM_NAME == __FILE__
 
     test = Page.new(toto)
     test.is_valid?
-
- puts "="*70
+    tata = Html.new([Head.new([Title.new(Text.new("Hello ground!"))]),
+    Body.new([H1.new(Text.new("Oh no, not again!")), Img.new([],
+    {'src': Text.new('http://i.imgur.com/pfp3T.jpg')}) ]) ])
+    test2 = Page.new(tata)
+    test2.is_valid?
+    puts "="*70
+    puts "end of pdf test"
+    puts "="*70
     # puts "TEST FROM PDF ASSIGNMENT (Must match expected output!)"
     # puts "="*70
     
